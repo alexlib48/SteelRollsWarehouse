@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+      - "5001:443"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Database=steelrolls;Username=postgres;Password=postgres
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - db
+    networks:
+      - steelrolls-network
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=steelrolls
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - steelrolls-network
+
+volumes:
+  postgres-data:
+
+networks:
+  steelrolls-network:
+    driver: bridge
